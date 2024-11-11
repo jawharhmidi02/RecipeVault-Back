@@ -1,0 +1,72 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+  Headers,
+} from '@nestjs/common';
+import { UsersService } from '../services/users.service';
+import { UsersUpdate, UsersCreate, UsersResponse } from 'src/dto/users.dto';
+import { ApiResponse } from 'src/common/interfaces/response.interface';
+
+@Controller('users')
+export class UserController {
+  constructor(private readonly userService: UsersService) {}
+
+  @Post('/signup/')
+  signUp(@Body() user: UsersCreate): Promise<ApiResponse<UsersResponse>> {
+    return this.userService.signup(user);
+  }
+
+  @Post('/signin/')
+  SignIn(
+    @Body('email') email: string,
+    @Body('password') password: string,
+  ): Promise<ApiResponse<{ access_token: string }>> {
+    return this.userService.signin(email, password);
+  }
+
+  @Get()
+  findAll(
+    @Headers('access_token') access_token: string,
+  ): Promise<ApiResponse<UsersResponse[]>> {
+    return this.userService.findAll(access_token);
+  }
+
+  @Get('/byid/:id')
+  findById(
+    @Param('id') id: string,
+    @Headers('access_token') access_token: string,
+  ): Promise<ApiResponse<UsersResponse>> {
+    return this.userService.findById(id, access_token);
+  }
+
+  @Get('/account')
+  getAccount(
+    @Headers('access_token') access_token: string,
+  ): Promise<ApiResponse<UsersResponse>> {
+    return this.userService.getAccount(access_token);
+  }
+
+  @Put(':id')
+  update(
+    @Param('id') id: string,
+    @Headers('access_token') access_token: string,
+    @Body() user: UsersUpdate,
+  ): Promise<ApiResponse<UsersResponse>> {
+    console.log(user);
+
+    return this.userService.update(id, user, access_token);
+  }
+
+  @Delete(':id')
+  remove(
+    @Param('id') id: string,
+    @Headers('access_token') access_token: string,
+  ): Promise<ApiResponse<UsersResponse>> {
+    return this.userService.remove(id, access_token);
+  }
+}
