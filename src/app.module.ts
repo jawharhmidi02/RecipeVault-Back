@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
-import { ConnectModule } from 'src/modules/connect.module';
+import { ConnectModule } from 'src/connect.module';
 import { UserModule } from './modules/users.module';
 import { PingModule } from './modules/ping_database.module';
-import { CategoryModule } from './modules/categories.module';
-import { ProductModule } from './modules/products.module';
+import { RecipesModule } from './modules/recipes.module';
+import { RecipeLikesModule } from './modules/recipelikes.module';
 
 @Module({
   imports: [
     ConnectModule,
     UserModule,
     PingModule,
-    CategoryModule,
-    ProductModule,
+    RecipesModule,
+    RecipeLikesModule,
   ],
 })
 export class AppModule {}

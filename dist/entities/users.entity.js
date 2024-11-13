@@ -11,6 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Users = void 0;
 const typeorm_1 = require("typeorm");
+const recipes_entity_1 = require("./recipes.entity");
+const recipeLikes_entity_1 = require("./recipeLikes.entity");
 let Users = class Users {
 };
 exports.Users = Users;
@@ -46,6 +48,14 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Users.prototype, "nonce", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => recipes_entity_1.Recipes, (recipe) => recipe.user),
+    __metadata("design:type", Array)
+], Users.prototype, "recipes", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => recipeLikes_entity_1.RecipeLikes, (like) => like.user),
+    __metadata("design:type", Array)
+], Users.prototype, "likes", void 0);
 exports.Users = Users = __decorate([
     (0, typeorm_1.Entity)()
 ], Users);

@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Recipes } from './recipes.entity';
+import { RecipeLikes } from './recipeLikes.entity';
 
 @Entity()
 export class Users {
@@ -25,4 +27,10 @@ export class Users {
 
   @Column({ nullable: true })
   nonce: string;
+
+  @OneToMany(() => Recipes, (recipe) => recipe.user)
+  recipes: Recipes[];
+
+  @OneToMany(() => RecipeLikes, (like) => like.user)
+  likes: RecipeLikes[];
 }

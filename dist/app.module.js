@@ -8,11 +8,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
-const connect_module_1 = require("./modules/connect.module");
+const connect_module_1 = require("./connect.module");
 const users_module_1 = require("./modules/users.module");
 const ping_database_module_1 = require("./modules/ping_database.module");
-const categories_module_1 = require("./modules/categories.module");
-const products_module_1 = require("./modules/products.module");
+const recipes_module_1 = require("./modules/recipes.module");
+const recipelikes_module_1 = require("./modules/recipelikes.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -22,8 +22,8 @@ exports.AppModule = AppModule = __decorate([
             connect_module_1.ConnectModule,
             users_module_1.UserModule,
             ping_database_module_1.PingModule,
-            categories_module_1.CategoryModule,
-            products_module_1.ProductModule,
+            recipes_module_1.RecipesModule,
+            recipelikes_module_1.RecipeLikesModule,
         ],
     })
 ], AppModule);

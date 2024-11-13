@@ -1,3 +1,5 @@
+import { Recipes } from './recipes.entity';
+import { RecipeLikes } from './recipeLikes.entity';
 export declare class Users {
     id: string;
     full_name: string;
@@ -7,4 +9,6 @@ export declare class Users {
     dialogues: string[];
     role: string;
     nonce: string;
+    recipes: Recipes[];
+    likes: RecipeLikes[];
 }

@@ -1,5 +1,7 @@
 import { Users } from 'src/entities/users.entity';
-import { IsString, IsNumber, isArray, IsArray } from 'class-validator';
+import { Recipes } from 'src/entities/recipes.entity';
+import { RecipeLikes } from 'src/entities/recipeLikes.entity';
+import { IsString, IsArray } from 'class-validator';
 
 export class UsersCreate {
   @IsString()
@@ -36,24 +38,25 @@ export class UsersUpdate {
 
   @IsString()
   nonce: string;
+
+  @IsArray()
+  recipes: Recipes[];
+
+  @IsArray()
+  likes: RecipeLikes[];
 }
 
 export class UsersResponse {
   id: string;
-
   full_name: string;
-
   email: string;
-
   password: string;
-
   phone: string;
-
   dialogues: string[];
-
   role: string;
-
   nonce: string;
+  recipes: Recipes[];
+  likes: RecipeLikes[];
 
   constructor(user: Users) {
     this.dialogues = user.dialogues;
@@ -63,5 +66,7 @@ export class UsersResponse {
     this.phone = user.phone;
     this.role = user.role;
     this.nonce = user.nonce;
+    this.recipes = user.recipes;
+    this.likes = user.likes;
   }
 }

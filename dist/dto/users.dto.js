@@ -61,6 +61,14 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], UsersUpdate.prototype, "nonce", void 0);
+__decorate([
+    (0, class_validator_1.IsArray)(),
+    __metadata("design:type", Array)
+], UsersUpdate.prototype, "recipes", void 0);
+__decorate([
+    (0, class_validator_1.IsArray)(),
+    __metadata("design:type", Array)
+], UsersUpdate.prototype, "likes", void 0);
 class UsersResponse {
     constructor(user) {
         this.dialogues = user.dialogues;
@@ -70,6 +78,8 @@ class UsersResponse {
         this.phone = user.phone;
         this.role = user.role;
         this.nonce = user.nonce;
+        this.recipes = user.recipes;
+        this.likes = user.likes;
     }
 }
 exports.UsersResponse = UsersResponse;
