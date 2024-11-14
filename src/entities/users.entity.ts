@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Recipes } from './recipes.entity';
-import { RecipeLikes } from './recipeLikes.entity';
+import { RecipeLikes } from './recipe-likes.entity';
 
 @Entity()
 export class Users {

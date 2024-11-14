@@ -8,9 +8,9 @@ import {
   Body,
   Headers,
 } from '@nestjs/common';
-import { RecipeLikesCreate } from 'src/dto/recipelikes.dto';
-import { RecipeLikesResponse } from 'src/dto/recipelikes.dto';
-import { RecipeLikesService } from 'src/services/recipeLikes.service';
+import { RecipeLikesCreate } from 'src/dto/recipe-likes.dto';
+import { RecipeLikesResponse } from 'src/dto/recipe-likes.dto';
+import { RecipeLikesService } from 'src/services/recipe-likes.service';
 import { ApiResponse } from 'src/common/interfaces/response.interface';
 
 @Controller('recipelikes')

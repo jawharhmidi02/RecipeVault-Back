@@ -1,6 +1,6 @@
 import { Users } from 'src/entities/users.entity';
 import { Recipes } from 'src/entities/recipes.entity';
-import { RecipeLikes } from 'src/entities/recipeLikes.entity';
+import { RecipeLikes } from 'src/entities/recipe-likes.entity';
 import { IsString, IsArray } from 'class-validator';
 
 export class UsersCreate {

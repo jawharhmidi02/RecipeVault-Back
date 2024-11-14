@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
 import { Users } from 'src/entities/users.entity';
-import { RecipeLikes } from './entities/recipeLikes.entity';
+import { RecipeLikes } from './entities/recipe-likes.entity';
 import { Recipes } from './entities/recipes.entity';
 
 dotenv.config();

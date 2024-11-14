@@ -1,6 +1,6 @@
 import { Users } from 'src/entities/users.entity';
 import { Recipes } from 'src/entities/recipes.entity';
-import { RecipeLikes } from 'src/entities/recipelikes.entity';
+import { RecipeLikes } from 'src/entities/recipe-likes.entity';
 import { IsObject } from 'class-validator';
 import { UsersResponse } from './users.dto';
 import { RecipesResponse } from './recipes.dto';

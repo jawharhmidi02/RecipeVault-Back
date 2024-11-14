@@ -3,7 +3,7 @@ import { ConnectModule } from 'src/connect.module';
 import { UserModule } from './modules/users.module';
 import { PingModule } from './modules/ping_database.module';
 import { RecipesModule } from './modules/recipes.module';
-import { RecipeLikesModule } from './modules/recipelikes.module';
+import { RecipeLikesModule } from './modules/recipe-likes.module';
 
 @Module({
   imports: [

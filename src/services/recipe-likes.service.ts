@@ -1,13 +1,13 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { RecipeLikes } from 'src/entities/recipelikes.entity';
-import { RecipeLikesCreate } from 'src/dto/recipelikes.dto';
+import { RecipeLikes } from 'src/entities/recipe-likes.entity';
+import { RecipeLikesCreate } from 'src/dto/recipe-likes.dto';
 import { ApiResponse } from 'src/common/interfaces/response.interface';
 import { Users } from 'src/entities/users.entity';
 import { Recipes } from 'src/entities/recipes.entity';
 import { UsersResponse } from 'src/dto/users.dto';
-import { RecipeLikesResponse } from 'src/dto/recipelikes.dto';
+import { RecipeLikesResponse } from 'src/dto/recipe-likes.dto';
 import { JwtService } from '@nestjs/jwt';
 import { RecipesResponse } from 'src/dto/recipes.dto';
 
