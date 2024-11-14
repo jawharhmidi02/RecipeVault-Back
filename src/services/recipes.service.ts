@@ -11,6 +11,7 @@ import {
 import { ApiResponse } from 'src/common/interfaces/response.interface';
 import { Users } from 'src/entities/users.entity';
 import { UsersResponse } from 'src/dto/users.dto';
+import { RecipeLikes } from 'src/entities/recipe-likes.entity';
 
 @Injectable()
 export class RecipesService {
@@ -20,6 +21,8 @@ export class RecipesService {
     private jwtService: JwtService,
     @InjectRepository(Users)
     private usersRepository: Repository<Users>,
+    @InjectRepository(RecipeLikes)
+    private recipeLikesRepository: Repository<RecipeLikes>,
   ) {}
 
   async create(
@@ -139,10 +142,14 @@ export class RecipesService {
 
       const data = new RecipesResponse(response);
 
+      const likes = await this.recipeLikesRepository.count({
+        where: { recipe: { id: response.id } },
+      });
+
       return {
         statusCode: HttpStatus.OK,
         message: 'Recipe retrieved successfully',
-        data: { ...data, user: new UsersResponse(response.user) },
+        data: { ...data, user: new UsersResponse(response.user), likes },
       };
     } catch (error) {
       console.log(error);
@@ -264,13 +271,19 @@ export class RecipesService {
 
       const [recipes, totalItems] = await queryBuilder.getManyAndCount();
 
-      const data = recipes.map((recipe) => {
-        const r = new RecipesResponse(recipe);
-        return {
+      const data = [];
+
+      for (let i = 0; i < recipes.length; i++) {
+        const r = new RecipesResponse(recipes[i]);
+        const likes = await this.recipeLikesRepository.count({
+          where: { recipe: { id: recipes[i].id } },
+        });
+        data.push({
           ...r,
-          user: new UsersResponse(recipe.user),
-        };
-      });
+          user: new UsersResponse(recipes[i].user),
+          likes,
+        });
+      }
 
       const totalPages = Math.ceil(totalItems / limit);
 
@@ -446,93 +459,3 @@ export class RecipesService {
     }
   }
 }
-
-// async search(
-//   page: number = 1,
-//   limit: number = 10,
-//   sortBy: 'date' | 'alpha' = 'date',
-//   sortOrder: 'asc' | 'desc' = 'desc',
-//   filters: {
-//     title?: string;
-//     ingredientsLocation?: string;
-//     cuisineLocation?: string;
-//     tag?: string;
-//     type: 'Starter' | 'Main' | 'Desert' | 'Snack' | 'Breakfast' | 'Beverage';
-//   },
-// ): Promise<
-//   ApiResponse<{
-//     data: RecipesResponse[];
-//     totalPages: number;
-//     currentPage: number;
-//     totalItems: number;
-//   }>
-// > {
-//   try {
-//     const queryOptions: FindManyOptions<Recipes> = {
-//       skip: (page - 1) * limit,
-//       take: limit,
-//       where: { is_approved: true },
-//       relations: ['user'],
-//       order: {},
-//     };
-
-//     if (filters.title) {
-//       queryOptions.where['title'] = Like(`%${filters.title}%`);
-//     }
-//     if (filters.type) {
-//       queryOptions.where['type'] = Like(`%${filters.type}%`);
-//     }
-//     if (filters.ingredientsLocation) {
-//       queryOptions.where['ingredientsLocation'] = Like(
-//         `%${filters.ingredientsLocation}%`,
-//       );
-//     }
-//     if (filters.cuisineLocation) {
-//       queryOptions.where['cuisineLocation'] = Like(
-//         `%${filters.cuisineLocation}%`,
-//       );
-//     }
-//     if (filters.tag) {
-//       queryOptions.where['tags'] = Like(`%${filters.tag}%`);
-//     }
-
-//     if (sortBy === 'date') {
-//       queryOptions.order['approvedAt'] = sortOrder;
-//     } else if (sortBy === 'alpha') {
-//       queryOptions.order['title'] = sortOrder;
-//     }
-
-//     const [recipes, totalItems] =
-//       await this.recipeRepository.findAndCount(queryOptions);
-
-//     const data = recipes.map((recipe) => {
-//       const r = new RecipesResponse(recipe);
-//       return {
-//         ...r,
-//         user: new UsersResponse(recipe.user),
-//       };
-//     });
-
-//     const totalPages = Math.ceil(totalItems / limit);
-
-//     return {
-//       statusCode: HttpStatus.OK,
-//       message: 'Recipes retrieved successfully',
-//       data: {
-//         data,
-//         totalPages,
-//         currentPage: page,
-//         totalItems,
-//       },
-//     };
-//   } catch (error) {
-//     console.error(error);
-//     throw new HttpException(
-//       {
-//         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-//         message: error.message || 'Failed to retrieve Recipes',
-//       },
-//       HttpStatus.INTERNAL_SERVER_ERROR,
-//     );
-//   }
-// }

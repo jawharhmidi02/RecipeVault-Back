@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Headers,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { UsersUpdate, UsersCreate, UsersResponse } from 'src/dto/users.dto';
@@ -68,5 +69,27 @@ export class UserController {
     @Headers('access_token') access_token: string,
   ): Promise<ApiResponse<UsersResponse>> {
     return this.userService.remove(id, access_token);
+  }
+
+  @Post('/recoverpass/:email')
+  sendRecoverPass(
+    @Param('email') email: string,
+  ): Promise<ApiResponse<any>> {
+    return this.userService.sendRecoverPassViaEmail(email);
+  }
+
+  @Post('/changepassfromrecover/:password')
+  changePasswordFromRecover(
+    @Query('access_token') access_token: string,
+    @Param('password') password: string,
+  ): Promise<ApiResponse<UsersResponse>> {
+    return this.userService.changePasswordFromRecover(access_token, password);
+  }
+
+  @Get('/recoverhtml')
+  getRecoverPassHtml(
+    @Query('access_token') access_token: string,
+  ): Promise<string> {
+    return this.userService.recoverPageHtml(access_token);
   }
 }

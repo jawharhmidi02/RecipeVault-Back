@@ -141,6 +141,7 @@ export class RecipesResponse {
   prepTime: number;
   bakingTime: number;
   restingTime: number;
+  likes?: number;
 
   constructor(recipe: Recipes) {
     this.id = recipe.id;
@@ -148,6 +149,7 @@ export class RecipesResponse {
     this.steps = recipe.steps;
     this.description = recipe.description;
     this.ingredientsLocation = recipe.ingredientsLocation;
+    this.cuisineLocation = recipe.cuisineLocation;
     this.ingredients = recipe.ingredients;
     this.is_approved = recipe.is_approved;
     this.is_rejected = recipe.is_rejected;
@@ -155,8 +157,11 @@ export class RecipesResponse {
     this.approvedAt = recipe.approvedAt;
     this.user = recipe.user;
     this.img = recipe.img;
-    this.cuisineLocation = recipe.cuisineLocation;
     this.tags = recipe.tags;
     this.type = recipe.type;
+    this.difficulty = recipe.difficulty;
+    this.prepTime = recipe.prepTime;
+    this.bakingTime = recipe.bakingTime;
+    this.restingTime = recipe.restingTime;
   }
 }
