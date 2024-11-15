@@ -359,6 +359,10 @@ export class RecipesService {
         queryBuilder.orderBy('recipe.title', order);
       }
 
+      queryBuilder.andWhere('recipe.is_approved = :is_approved', {
+        is_approved: true,
+      });
+
       const [recipes, totalItems] = await queryBuilder.getManyAndCount();
 
       const data = [];
