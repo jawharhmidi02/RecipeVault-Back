@@ -8,7 +8,10 @@ import {
   Post,
   Put,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiResponse } from 'src/common/interfaces/response.interface';
 import {
   RecipesCreate,
@@ -24,9 +27,22 @@ export class RecipeController {
   @Post()
   async create(
     @Body() recipeDto: RecipesCreate,
-    @Headers('access_token') access_token?: string,
+    @Headers('access_token') access_token: string,
   ): Promise<ApiResponse<RecipesResponse>> {
+    console.log('body:');
+    console.log(recipeDto);
+
     return await this.recipeService.create(recipeDto, access_token);
+  }
+
+  @Post('/uploadphoto/:id')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadPhoto(
+    @Param('id') id: string,
+    @Headers('access_token') access_token: string,
+    @UploadedFile('file') file: any,
+  ): Promise<ApiResponse<RecipesResponse>> {
+    return await this.recipeService.uploadPhoto(id, access_token, file);
   }
 
   @Get()
@@ -68,7 +84,7 @@ export class RecipeController {
     @Query('tag') tag?: string,
     @Query('difficulty') difficulty?: 'Easy' | 'Medium' | 'Hard',
     @Query('type')
-    type?: 'Starter' | 'Main' | 'Desert' | 'Snack' | 'Breakfast' | 'Beverage',
+    type?: 'Starter' | 'Main' | 'Dessert' | 'Snack' | 'Breakfast' | 'Beverage',
   ): Promise<
     ApiResponse<{
       data: RecipesResponse[];

@@ -12,7 +12,7 @@ import { UsersResponse } from './users.dto';
 export enum RecipeType {
   Starter = 'Starter',
   Main = 'Main',
-  Desert = 'Desert',
+  Dessert = 'Dessert',
   Snack = 'Snack',
   Breakfast = 'Breakfast',
   Beverage = 'Beverage',
@@ -41,9 +41,6 @@ export class RecipesCreate {
   @IsString()
   cuisineLocation: string;
 
-  @IsString()
-  img: string;
-
   @IsArray()
   @IsString({ each: true })
   ingredients: string[];
@@ -51,6 +48,10 @@ export class RecipesCreate {
   @IsArray()
   @IsString({ each: true })
   tags: string[];
+
+  @IsArray()
+  @IsString({ each: true })
+  utensils: string[];
 
   @IsEnum(RecipeType)
   type: RecipeType;
@@ -92,6 +93,10 @@ export class RecipesUpdate {
 
   @IsArray()
   tags: string[];
+
+  @IsArray()
+  @IsString({ each: true })
+  utensils: string[];
 
   @IsEnum(RecipeType)
   type: RecipeType;
@@ -136,12 +141,13 @@ export class RecipesResponse {
   user: UsersResponse;
   img: string;
   tags: string[];
-  type: 'Starter' | 'Main' | 'Desert' | 'Snack' | 'Breakfast' | 'Beverage';
+  type: 'Starter' | 'Main' | 'Dessert' | 'Snack' | 'Breakfast' | 'Beverage';
   difficulty: 'Easy' | 'Medium' | 'Hard';
   prepTime: number;
   bakingTime: number;
   restingTime: number;
   likes?: number;
+  utensils: string[];
 
   constructor(recipe: Recipes) {
     this.id = recipe.id;
@@ -163,5 +169,6 @@ export class RecipesResponse {
     this.prepTime = recipe.prepTime;
     this.bakingTime = recipe.bakingTime;
     this.restingTime = recipe.restingTime;
+    this.utensils = recipe.utensils;
   }
 }

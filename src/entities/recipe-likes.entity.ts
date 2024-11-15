@@ -7,9 +7,9 @@ export class RecipeLikes {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Users, (user) => user.id)
+  @ManyToOne(() => Users, (user) => user.id, { onDelete: 'CASCADE' })
   user: Users;
 
-  @ManyToOne(() => Recipes, (recipe) => recipe.id)
+  @ManyToOne(() => Recipes, (recipe) => recipe.id, { onDelete: 'CASCADE' })
   recipe: Recipes;
 }

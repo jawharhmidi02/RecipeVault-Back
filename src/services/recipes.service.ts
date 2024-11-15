@@ -12,6 +12,8 @@ import { ApiResponse } from 'src/common/interfaces/response.interface';
 import { Users } from 'src/entities/users.entity';
 import { UsersResponse } from 'src/dto/users.dto';
 import { RecipeLikes } from 'src/entities/recipe-likes.entity';
+import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
+import { Stream } from 'stream';
 
 @Injectable()
 export class RecipesService {
@@ -27,7 +29,7 @@ export class RecipesService {
 
   async create(
     recipe: RecipesCreate,
-    access_token?: string,
+    access_token: string,
   ): Promise<ApiResponse<RecipesResponse>> {
     try {
       const payLoad = await this.jwtService.verifyAsync(access_token);
@@ -64,6 +66,94 @@ export class RecipesService {
         approvedAt,
         user: new UsersResponse(account),
       });
+      return {
+        statusCode: HttpStatus.CREATED,
+        message: 'Recipe created successfully',
+        data: new RecipesResponse(savedRecipe),
+      };
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(
+        error.message || 'Failed to create recipe',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async uploadPhoto(
+    id: string,
+    access_token: string,
+    file: any,
+  ): Promise<ApiResponse<RecipesResponse>> {
+    try {
+      const payLoad = await this.jwtService.verifyAsync(access_token);
+
+      const account = await this.usersRepository.findOne({
+        where: { id: payLoad.id },
+      });
+
+      if (
+        !account ||
+        account.nonce !== payLoad.nonce ||
+        (account.role !== 'admin' &&
+          account.role !== 'client' &&
+          account.role !== 'specialist')
+      ) {
+        return {
+          statusCode: HttpStatus.FORBIDDEN,
+          message: 'Unauthorized access',
+          data: null,
+        };
+      }
+
+      let is_approved = false;
+      let approvedAt = null;
+
+      if (account.role === 'admin' || account.role === 'specialist') {
+        is_approved = true;
+        approvedAt = new Date();
+      }
+
+      cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET,
+      });
+
+      const stream = new Stream.PassThrough();
+      stream.end(file.buffer);
+
+      const uploadResult = await new Promise<UploadApiResponse>(
+        (resolve, reject) => {
+          cloudinary.uploader
+            .upload_stream({ folder: 'recipevault' }, (error, result) => {
+              if (error) return reject(error);
+              resolve(result);
+            })
+            .end(file.buffer);
+        },
+      );
+      const recipe = await this.recipeRepository.findOne({
+        where: { id },
+        relations: ['user'],
+      });
+      if (!recipe) {
+        return {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'Recipe not found',
+          data: null,
+        };
+      }
+      if (recipe.user.id !== account.id) {
+        return {
+          statusCode: HttpStatus.FORBIDDEN,
+          message: 'Unauthorized access',
+          data: null,
+        };
+      }
+      recipe.img = uploadResult.secure_url;
+      const savedRecipe = await this.recipeRepository.save(recipe);
+
       return {
         statusCode: HttpStatus.CREATED,
         message: 'Recipe created successfully',

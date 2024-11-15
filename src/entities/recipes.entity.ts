@@ -21,7 +21,7 @@ export class Recipes {
   @Column('text')
   cuisineLocation: string;
 
-  @Column('text')
+  @Column('text', { default: '' })
   img: string;
 
   @Column('text', { array: true, default: [] })
@@ -45,8 +45,11 @@ export class Recipes {
   @Column('text', { array: true, default: [] })
   tags: string[];
 
+  @Column('text', { array: true, default: [] })
+  utensils: string[];
+
   @Column('text')
-  type: 'Starter' | 'Main' | 'Desert' | 'Snack' | 'Breakfast' | 'Beverage';
+  type: 'Starter' | 'Main' | 'Dessert' | 'Snack' | 'Breakfast' | 'Beverage';
 
   @Column('text')
   difficulty: 'Easy' | 'Medium' | 'Hard';
