@@ -216,6 +216,226 @@ export class RecipesService {
     }
   }
 
+  async findAllByUserId(
+    page: number = 1,
+    limit: number = 10,
+    id: string,
+  ): Promise<
+    ApiResponse<{
+      data: RecipesResponse[];
+      totalPages: number;
+      currentPage: number;
+      totalItems: number;
+    }>
+  > {
+    try {
+      const [response, totalItems] = await this.recipeRepository.findAndCount({
+        skip: (page - 1) * limit,
+        take: limit,
+        relations: ['user'],
+        where: { user: { id }, is_approved: true },
+      });
+
+      const data = response.map((recipe) => {
+        const r = new RecipesResponse(recipe);
+        return {
+          ...r,
+          user: new UsersResponse(recipe.user),
+        };
+      });
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Recipes retrieved successfully',
+        data: {
+          data: data,
+          totalPages: Math.ceil(totalItems / limit),
+          currentPage: page,
+          totalItems,
+        },
+      };
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: error.message || 'Failed to retrieve Recipes',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async findPending(
+    page: number = 1,
+    limit: number = 10,
+    access_token: string,
+  ): Promise<
+    ApiResponse<{
+      data: RecipesResponse[];
+      totalPages: number;
+      currentPage: number;
+      totalItems: number;
+    }>
+  > {
+    try {
+      const payLoad = await this.jwtService.verifyAsync(access_token);
+
+      const account = await this.usersRepository.findOne({
+        where: { id: payLoad.id },
+      });
+
+      if (
+        !account ||
+        account.nonce !== payLoad.nonce ||
+        account.role !== 'specialist'
+      ) {
+        if (account.role !== 'admin') {
+          return {
+            statusCode: HttpStatus.FORBIDDEN,
+            message: 'Unauthorized access',
+            data: null,
+          };
+        }
+      }
+
+      const [response, totalItems] = await this.recipeRepository.findAndCount({
+        skip: (page - 1) * limit,
+        take: limit,
+        relations: ['user'],
+        where: { is_approved: false, is_rejected: false },
+      });
+
+      const data = response.map((recipe) => {
+        const r = new RecipesResponse(recipe);
+        return {
+          ...r,
+          user: new UsersResponse(recipe.user),
+        };
+      });
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Recipes retrieved successfully',
+        data: {
+          data: data,
+          totalPages: Math.ceil(totalItems / limit),
+          currentPage: page,
+          totalItems,
+        },
+      };
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: error.message || 'Failed to retrieve Recipes',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async findRejectedByUserId(
+    page: number = 1,
+    limit: number = 10,
+    id: string,
+  ): Promise<
+    ApiResponse<{
+      data: RecipesResponse[];
+      totalPages: number;
+      currentPage: number;
+      totalItems: number;
+    }>
+  > {
+    try {
+      const [response, totalItems] = await this.recipeRepository.findAndCount({
+        skip: (page - 1) * limit,
+        take: limit,
+        relations: ['user'],
+        where: { user: { id }, is_rejected: true },
+      });
+
+      const data = response.map((recipe) => {
+        const r = new RecipesResponse(recipe);
+        return {
+          ...r,
+          user: new UsersResponse(recipe.user),
+        };
+      });
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Recipes retrieved successfully',
+        data: {
+          data: data,
+          totalPages: Math.ceil(totalItems / limit),
+          currentPage: page,
+          totalItems,
+        },
+      };
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: error.message || 'Failed to retrieve Recipes',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async findPendingByUserId(
+    page: number = 1,
+    limit: number = 10,
+    id: string,
+  ): Promise<
+    ApiResponse<{
+      data: RecipesResponse[];
+      totalPages: number;
+      currentPage: number;
+      totalItems: number;
+    }>
+  > {
+    try {
+      const [response, totalItems] = await this.recipeRepository.findAndCount({
+        skip: (page - 1) * limit,
+        take: limit,
+        relations: ['user'],
+        where: { user: { id }, is_approved: false, is_rejected: false },
+      });
+
+      const data = response.map((recipe) => {
+        const r = new RecipesResponse(recipe);
+        return {
+          ...r,
+          user: new UsersResponse(recipe.user),
+        };
+      });
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Recipes retrieved successfully',
+        data: {
+          data: data,
+          totalPages: Math.ceil(totalItems / limit),
+          currentPage: page,
+          totalItems,
+        },
+      };
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: error.message || 'Failed to retrieve Recipes',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   async findById(id: string): Promise<ApiResponse<RecipesResponse>> {
     try {
       const response = await this.recipeRepository.findOne({
@@ -436,7 +656,7 @@ export class RecipesService {
         };
       }
 
-      if (account.role !== 'admin') {
+      if (account.role !== 'admin' && account.role !== 'specialist') {
         if (account.id !== testResponse.user.id) {
           return {
             statusCode: HttpStatus.FORBIDDEN,

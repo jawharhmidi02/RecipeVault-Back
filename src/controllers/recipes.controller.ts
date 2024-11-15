@@ -60,6 +60,70 @@ export class RecipeController {
     return this.recipeService.findAll(page, limit);
   }
 
+  @Get('/byuserid/:id')
+  findAllByUserID(
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Param('id') id: string,
+  ): Promise<
+    ApiResponse<{
+      data: RecipesResponse[];
+      totalPages: number;
+      currentPage: number;
+      totalItems: number;
+    }>
+  > {
+    return this.recipeService.findAllByUserId(page, limit, id);
+  }
+
+  @Get('/pending/byuserid/:id')
+  findPendingByUserID(
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Param('id') id: string,
+  ): Promise<
+    ApiResponse<{
+      data: RecipesResponse[];
+      totalPages: number;
+      currentPage: number;
+      totalItems: number;
+    }>
+  > {
+    return this.recipeService.findPendingByUserId(page, limit, id);
+  }
+
+  @Get('/pending')
+  findPending(
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Headers('access_token') access_token: string,
+  ): Promise<
+    ApiResponse<{
+      data: RecipesResponse[];
+      totalPages: number;
+      currentPage: number;
+      totalItems: number;
+    }>
+  > {
+    return this.recipeService.findPending(page, limit, access_token);
+  }
+
+  @Get('/rejected/byuserid/:id')
+  findRejectedByUserID(
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Param('id') id: string,
+  ): Promise<
+    ApiResponse<{
+      data: RecipesResponse[];
+      totalPages: number;
+      currentPage: number;
+      totalItems: number;
+    }>
+  > {
+    return this.recipeService.findRejectedByUserId(page, limit, id);
+  }
+
   @Get('/byid/:id')
   findById(@Param('id') id: string): Promise<ApiResponse<RecipesResponse>> {
     return this.recipeService.findById(id);
