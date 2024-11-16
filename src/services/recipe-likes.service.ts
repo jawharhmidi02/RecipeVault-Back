@@ -178,27 +178,38 @@ export class RecipeLikesService {
     }
   }
 
-  async findByUserID(id: string): Promise<ApiResponse<RecipeLikesResponse[]>> {
+  async findByUserID(
+    page: number = 1,
+    limit: number = 10,
+    id: string,
+  ): Promise<
+    ApiResponse<{
+      data: RecipeLikesResponse[];
+      totalPages: number;
+      currentPage: number;
+      totalItems: number;
+    }>
+  > {
     try {
-      const recipeLike = await this.recipeLikesRepository.find({
-        where: { user: { id } },
-        relations: ['user', 'recipe'],
-      });
-
-      if (!recipeLike) {
-        return {
-          statusCode: HttpStatus.NOT_FOUND,
-          message: 'Recipe like not found',
-          data: null,
-        };
-      }
+      const [recipeLike, totalItems] =
+        await this.recipeLikesRepository.findAndCount({
+          skip: (page - 1) * limit,
+          take: limit,
+          where: { user: { id } },
+          relations: ['user', 'recipe'],
+        });
 
       const data = recipeLike.map((like) => new RecipeLikesResponse(like));
 
       return {
         statusCode: HttpStatus.OK,
-        message: 'Recipe likes Of User retrieved successfully',
-        data,
+        message: 'User Likes retrieved successfully',
+        data: {
+          data: data,
+          totalPages: Math.ceil(totalItems / limit),
+          currentPage: page,
+          totalItems,
+        },
       };
     } catch (error) {
       console.error(error);

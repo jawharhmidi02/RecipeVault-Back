@@ -7,6 +7,7 @@ import {
   Param,
   Body,
   Headers,
+  Query,
 } from '@nestjs/common';
 import { RecipeLikesCreate } from 'src/dto/recipe-likes.dto';
 import { RecipeLikesResponse } from 'src/dto/recipe-likes.dto';
@@ -46,8 +47,17 @@ export class RecipeLikesController {
 
   @Get('/user/:id')
   async findByUserID(
+    @Query('page') page: number,
+    @Query('limit') limit: number,
     @Param('id') id: string,
-  ): Promise<ApiResponse<RecipeLikesResponse[]>> {
-    return this.recipeLikesService.findByUserID(id);
+  ): Promise<
+    ApiResponse<{
+      data: RecipeLikesResponse[];
+      totalPages: number;
+      currentPage: number;
+      totalItems: number;
+    }>
+  > {
+    return this.recipeLikesService.findByUserID(page, limit, id);
   }
 }
