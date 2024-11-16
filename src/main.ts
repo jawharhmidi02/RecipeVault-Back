@@ -7,11 +7,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   console.log('Server is running on port 5000');
   app.useGlobalPipes(
-    // new ValidationPipe({
-    //   whitelist: true,
-    //   forbidNonWhitelisted: true,
-    //   skipMissingProperties: true,
-    // }),
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      skipMissingProperties: true,
+    }),
   );
   app.enableCors();
   app.useGlobalFilters(new HttpExceptionFilter());

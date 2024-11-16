@@ -4,6 +4,7 @@ import { UserModule } from './modules/users.module';
 import { PingModule } from './modules/ping_database.module';
 import { RecipesModule } from './modules/recipes.module';
 import { RecipeLikesModule } from './modules/recipe-likes.module';
+import { FormsModule } from './modules/forms.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { RecipeLikesModule } from './modules/recipe-likes.module';
     PingModule,
     RecipesModule,
     RecipeLikesModule,
+    FormsModule,
   ],
 })
 export class AppModule {}

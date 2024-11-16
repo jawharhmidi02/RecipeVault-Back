@@ -114,6 +114,25 @@ export class RecipesService {
         approvedAt = new Date();
       }
 
+      const recipe = await this.recipeRepository.findOne({
+        where: { id },
+        relations: ['user'],
+      });
+      if (!recipe) {
+        return {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'Recipe not found',
+          data: null,
+        };
+      }
+      if (recipe.user.id !== account.id) {
+        return {
+          statusCode: HttpStatus.FORBIDDEN,
+          message: 'Unauthorized access',
+          data: null,
+        };
+      }
+
       cloudinary.config({
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
         api_key: process.env.CLOUDINARY_API_KEY,
@@ -133,24 +152,7 @@ export class RecipesService {
             .end(file.buffer);
         },
       );
-      const recipe = await this.recipeRepository.findOne({
-        where: { id },
-        relations: ['user'],
-      });
-      if (!recipe) {
-        return {
-          statusCode: HttpStatus.NOT_FOUND,
-          message: 'Recipe not found',
-          data: null,
-        };
-      }
-      if (recipe.user.id !== account.id) {
-        return {
-          statusCode: HttpStatus.FORBIDDEN,
-          message: 'Unauthorized access',
-          data: null,
-        };
-      }
+
       recipe.img = uploadResult.secure_url;
       const savedRecipe = await this.recipeRepository.save(recipe);
 
