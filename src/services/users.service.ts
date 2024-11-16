@@ -2,7 +2,12 @@ import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Users } from '../entities/users.entity';
-import { UsersCreate, UsersResponse, UsersUpdate } from 'src/dto/users.dto';
+import {
+  UserProfileResponse,
+  UsersCreate,
+  UsersResponse,
+  UsersUpdate,
+} from 'src/dto/users.dto';
 import { JwtService } from '@nestjs/jwt';
 import { createCipheriv, randomBytes, createDecipheriv } from 'crypto';
 import { ApiResponse } from 'src/common/interfaces/response.interface';
@@ -202,6 +207,37 @@ export class UsersService {
     }
   }
 
+  async getProfile(id: string): Promise<ApiResponse<UserProfileResponse>> {
+    try {
+      const response = await this.usersRepository.findOne({
+        where: { id },
+      });
+
+      if (!response)
+        return {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'Profile not found',
+          data: null,
+        };
+
+      const data = new UserProfileResponse(response);
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Account retrieved successfully',
+        data,
+      };
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: error.message || 'Failed to retrieve account',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
   async getAccount(access_token: string): Promise<ApiResponse<UsersResponse>> {
     try {
       const payLoad = await this.jwtService.verifyAsync(access_token);

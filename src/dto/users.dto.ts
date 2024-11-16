@@ -70,3 +70,23 @@ export class UsersResponse {
     this.likes = user.likes;
   }
 }
+
+export class UserProfileResponse {
+  id: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  role: string;
+  recipes: Recipes[];
+  likes: RecipeLikes[];
+
+  constructor(user: Users) {
+    this.email = user.email;
+    this.id = user.id;
+    this.full_name = user.full_name;
+    this.phone = user.phone;
+    this.role = user.role;
+    this.recipes = user.recipes;
+    this.likes = user.likes;
+  }
+}

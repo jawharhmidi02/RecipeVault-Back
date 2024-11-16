@@ -8,6 +8,7 @@ import {
   Headers,
   UseInterceptors,
   UploadedFile,
+  Put,
 } from '@nestjs/common';
 import { FormsCreate } from 'src/dto/forms.dto';
 import { FormsResponse } from 'src/dto/forms.dto';
@@ -52,11 +53,19 @@ export class FormsController {
     return this.formsService.findByUserID(id, access_token);
   }
 
-  @Delete()
+  @Put(':id')
+  async Accept(
+    @Param('id') id: string,
+    @Headers('access_token') access_token: string,
+  ): Promise<ApiResponse<FormsResponse>> {
+    return this.formsService.accept(id, access_token);
+  }
+
+  @Delete(':id')
   async delete(
     @Param('id') id: string,
     @Headers('access_token') access_token: string,
   ): Promise<ApiResponse<FormsResponse>> {
-    return this.formsService.remove(id, access_token);
+    return this.formsService.reject(id, access_token);
   }
 }

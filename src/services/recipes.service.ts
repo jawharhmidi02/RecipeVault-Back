@@ -238,13 +238,19 @@ export class RecipesService {
         where: { user: { id }, is_approved: true },
       });
 
-      const data = response.map((recipe) => {
-        const r = new RecipesResponse(recipe);
-        return {
+      const data = [];
+
+      for (let i = 0; i < response.length; i++) {
+        const r = new RecipesResponse(response[i]);
+        const likes = await this.recipeLikesRepository.count({
+          where: { recipe: { id: response[i].id } },
+        });
+        data.push({
           ...r,
-          user: new UsersResponse(recipe.user),
-        };
-      });
+          user: new UsersResponse(response[i].user),
+          likes,
+        });
+      }
 
       return {
         statusCode: HttpStatus.OK,

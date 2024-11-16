@@ -253,7 +253,71 @@ export class FormsService {
     }
   }
 
-  async remove(
+  async accept(
+    id: string,
+    access_token: string,
+  ): Promise<ApiResponse<FormsResponse>> {
+    try {
+      const payLoad = await this.jwtService.verifyAsync(access_token);
+
+      if (!payLoad) {
+        return {
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: 'Unauthorized access',
+          data: null,
+        };
+      }
+      const userTest = await this.usersRepository.findOne({
+        where: { id: payLoad.id },
+      });
+      if (!userTest) {
+        return {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'User not found',
+          data: null,
+        };
+      }
+      if (userTest.role !== 'admin') {
+        return {
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: 'Unauthorized access',
+          data: null,
+        };
+      }
+      const form = await this.formsRepository.findOne({
+        where: { id },
+        relations: ['user'],
+      });
+
+      if (!form) {
+        return {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'Form not found',
+          data: null,
+        };
+      }
+
+      await this.usersRepository.update(
+        { id: form.user.id },
+        { role: 'specialist' },
+      );
+      await this.formsRepository.remove(form);
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Form deleted successfully',
+        data: new FormsResponse(form),
+      };
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(
+        'Failed to delete Form',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async reject(
     id: string,
     access_token: string,
   ): Promise<ApiResponse<FormsResponse>> {

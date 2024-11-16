@@ -10,7 +10,12 @@ import {
   Query,
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
-import { UsersUpdate, UsersCreate, UsersResponse } from 'src/dto/users.dto';
+import {
+  UsersUpdate,
+  UsersCreate,
+  UsersResponse,
+  UserProfileResponse,
+} from 'src/dto/users.dto';
 import { ApiResponse } from 'src/common/interfaces/response.interface';
 
 @Controller('users')
@@ -52,6 +57,13 @@ export class UserController {
     return this.userService.getAccount(access_token);
   }
 
+  @Get('/profile/:id')
+  getProfile(
+    @Param('id') id: string,
+  ): Promise<ApiResponse<UserProfileResponse>> {
+    return this.userService.getProfile(id);
+  }
+
   @Put(':id')
   update(
     @Param('id') id: string,
@@ -72,9 +84,7 @@ export class UserController {
   }
 
   @Post('/recoverpass/:email')
-  sendRecoverPass(
-    @Param('email') email: string,
-  ): Promise<ApiResponse<any>> {
+  sendRecoverPass(@Param('email') email: string): Promise<ApiResponse<any>> {
     return this.userService.sendRecoverPassViaEmail(email);
   }
 
