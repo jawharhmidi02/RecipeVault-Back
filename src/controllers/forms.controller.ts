@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Put,
+  Query,
 } from '@nestjs/common';
 import { FormsCreate } from 'src/dto/forms.dto';
 import { FormsResponse } from 'src/dto/forms.dto';
@@ -32,9 +33,18 @@ export class FormsController {
 
   @Get()
   async findAll(
+    @Query('page') page: number,
+    @Query('limit') limit: number,
     @Headers('access_token') access_token: string,
-  ): Promise<ApiResponse<FormsResponse[]>> {
-    return this.formsService.findAll(access_token);
+  ): Promise<
+    ApiResponse<{
+      data: FormsResponse[];
+      totalPages: number;
+      currentPage: number;
+      totalItems: number;
+    }>
+  > {
+    return this.formsService.findAll(page, limit, access_token);
   }
 
   @Get(':id')

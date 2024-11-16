@@ -87,7 +87,18 @@ export class FormsService {
     }
   }
 
-  async findAll(access_token: string): Promise<ApiResponse<FormsResponse[]>> {
+  async findAll(
+    page: number = 1,
+    limit: number = 10,
+    access_token: string,
+  ): Promise<
+    ApiResponse<{
+      data: FormsResponse[];
+      totalPages: number;
+      currentPage: number;
+      totalItems: number;
+    }>
+  > {
     try {
       const payLoad = await this.jwtService.verifyAsync(access_token);
 
@@ -115,15 +126,24 @@ export class FormsService {
           data: null,
         };
       }
-      const forms = await this.formsRepository.find({
+
+      const [response, totalItems] = await this.formsRepository.findAndCount({
+        skip: (page - 1) * limit,
+        take: limit,
         relations: ['user'],
       });
-      const data = forms.map((like) => new FormsResponse(like));
+
+      const data = response.map((form) => new FormsResponse(form));
 
       return {
         statusCode: HttpStatus.OK,
         message: 'Forms retrieved successfully',
-        data,
+        data: {
+          data: data,
+          totalPages: Math.ceil(totalItems / limit),
+          currentPage: page,
+          totalItems,
+        },
       };
     } catch (error) {
       console.error(error);
