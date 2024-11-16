@@ -10,6 +10,7 @@ import { UsersResponse } from 'src/dto/users.dto';
 import { RecipeLikesResponse } from 'src/dto/recipe-likes.dto';
 import { JwtService } from '@nestjs/jwt';
 import { RecipesResponse } from 'src/dto/recipes.dto';
+import { NotificationsGateway } from 'src/notifications/notifications.gateway';
 
 @Injectable()
 export class RecipeLikesService {
@@ -21,6 +22,7 @@ export class RecipeLikesService {
     @InjectRepository(Recipes)
     private recipesRepository: Repository<Recipes>,
     private jwtService: JwtService,
+    private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
   async create(
@@ -55,6 +57,7 @@ export class RecipeLikesService {
 
       const recipe = await this.recipesRepository.findOne({
         where: { id: data.recipe.id },
+        relations: ['user'],
       });
       if (!recipe) {
         throw new HttpException('Recipe not found', HttpStatus.NOT_FOUND);
@@ -77,6 +80,13 @@ export class RecipeLikesService {
       const recipeLike = this.recipeLikesRepository.create({ user, recipe });
       const savedRecipeLike = await this.recipeLikesRepository.save(recipeLike);
 
+      if (recipe.user && recipe.user.id && recipe.user.id !== user.id) {
+        this.notificationsGateway.notifyUser(recipe.user.id, {
+          type: 'recipe_liked',
+          message: `${user.full_name} liked your recipe: ${recipe.title}`,
+          recipeId: recipe.id,
+        });
+      }
       return {
         statusCode: HttpStatus.CREATED,
         message: 'Recipe like created successfully',

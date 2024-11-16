@@ -188,13 +188,74 @@ export class RecipesService {
         relations: ['user'],
       });
 
-      const data = response.map((recipe) => {
-        const r = new RecipesResponse(recipe);
-        return {
+      const data = [];
+      for (let i = 0; i < response.length; i++) {
+        const r = new RecipesResponse(response[i]);
+        const likes = await this.recipeLikesRepository.count({
+          where: { recipe: { id: response[i].id } },
+        });
+        data.push({
           ...r,
-          user: new UsersResponse(recipe.user),
-        };
+          user: new UsersResponse(response[i].user),
+          likes,
+        });
+      }
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Recipes retrieved successfully',
+        data: {
+          data: data,
+          totalPages: Math.ceil(totalItems / limit),
+          currentPage: page,
+          totalItems,
+        },
+      };
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: error.message || 'Failed to retrieve Recipes',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async findAllOrderLikes(
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<
+    ApiResponse<{
+      data: RecipesResponse[];
+      totalPages: number;
+      currentPage: number;
+      totalItems: number;
+    }>
+  > {
+    try {
+      const [response, totalItems] = await this.recipeRepository.findAndCount({
+        skip: (page - 1) * limit,
+        take: limit,
+        relations: ['user'],
+        where: { is_approved: true, is_rejected: false },
       });
+
+      const data = [];
+      for (let i = 0; i < response.length; i++) {
+        const r = new RecipesResponse(response[i]);
+        const likes = await this.recipeLikesRepository.count({
+          where: { recipe: { id: response[i].id } },
+        });
+        data.push({
+          ...r,
+          user: new UsersResponse(response[i].user),
+          likes,
+        });
+      }
+
+      data.sort((a, b) => b.likes - a.likes);
 
       return {
         statusCode: HttpStatus.OK,

@@ -6,6 +6,7 @@ import { RecipeLikesController } from 'src/controllers/recipe-likes.controller';
 import { RecipeLikes } from 'src/entities/recipe-likes.entity';
 import { Recipes } from 'src/entities/recipes.entity';
 import { Users } from 'src/entities/users.entity';
+import { NotificationsGateway } from 'src/notifications/notifications.gateway';
 import { RecipeLikesService } from 'src/services/recipe-likes.service';
 
 @Module({
@@ -13,7 +14,7 @@ import { RecipeLikesService } from 'src/services/recipe-likes.service';
     TypeOrmModule.forFeature([RecipeLikes, Users, Recipes]),
     JwtModule.register({ secret: jwtConstants.secret, global: true }),
   ],
-  providers: [RecipeLikesService],
+  providers: [RecipeLikesService, NotificationsGateway],
   controllers: [RecipeLikesController],
 })
 export class RecipeLikesModule {}

@@ -60,6 +60,21 @@ export class RecipeController {
     return this.recipeService.findAll(page, limit);
   }
 
+  @Get('/like')
+  findAllOrderLikes(
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+  ): Promise<
+    ApiResponse<{
+      data: RecipesResponse[];
+      totalPages: number;
+      currentPage: number;
+      totalItems: number;
+    }>
+  > {
+    return this.recipeService.findAllOrderLikes(page, limit);
+  }
+
   @Get('/byuserid/:id')
   findAllByUserID(
     @Query('page') page: number,
