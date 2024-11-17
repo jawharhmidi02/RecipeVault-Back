@@ -33,4 +33,10 @@ export class Users {
 
   @OneToMany(() => RecipeLikes, (like) => like.user)
   likes: RecipeLikes[];
+
+  @Column({ default: 0 })
+  acceptions: number;
+
+  @Column({ default: 0 })
+  rejections: number;
 }

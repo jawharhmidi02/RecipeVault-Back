@@ -81,7 +81,7 @@ export class RecipeLikesService {
       const savedRecipeLike = await this.recipeLikesRepository.save(recipeLike);
 
       if (recipe.user && recipe.user.id && recipe.user.id !== user.id) {
-        this.notificationsGateway.notifyUser(recipe.user.id, {
+        this.notificationsGateway.notifyUserForLike(recipe.user.id, {
           type: 'recipe_liked',
           message: `${user.full_name} liked your recipe: ${recipe.title}`,
           recipeId: recipe.id,

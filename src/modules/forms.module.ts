@@ -5,6 +5,7 @@ import { jwtConstants } from 'src/constants/jwt.constant';
 import { FormsController } from 'src/controllers/forms.controller';
 import { Forms } from 'src/entities/forms.entity';
 import { Users } from 'src/entities/users.entity';
+import { NotificationsGateway } from 'src/notifications/notifications.gateway';
 import { FormsService } from 'src/services/forms.service';
 
 @Module({
@@ -12,7 +13,7 @@ import { FormsService } from 'src/services/forms.service';
     TypeOrmModule.forFeature([Forms, Users]),
     JwtModule.register({ secret: jwtConstants.secret, global: true }),
   ],
-  providers: [FormsService],
+  providers: [FormsService, NotificationsGateway],
   controllers: [FormsController],
 })
 export class FormsModule {}

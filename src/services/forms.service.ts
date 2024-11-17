@@ -8,6 +8,7 @@ import { Users } from 'src/entities/users.entity';
 import { FormsResponse } from 'src/dto/forms.dto';
 import { JwtService } from '@nestjs/jwt';
 import { createClient } from '@supabase/supabase-js';
+import { NotificationsGateway } from 'src/notifications/notifications.gateway';
 
 @Injectable()
 export class FormsService {
@@ -17,6 +18,7 @@ export class FormsService {
     @InjectRepository(Users)
     private usersRepository: Repository<Users>,
     private jwtService: JwtService,
+    private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
   async create(
@@ -321,6 +323,11 @@ export class FormsService {
         { id: form.user.id },
         { role: 'specialist' },
       );
+      this.notificationsGateway.notifyUserForAcceptedSpecialist(form.user.id, {
+        type: 'form_accepted',
+        message: `Your form has been accepted, You are now a Specialist Congratulations!`,
+        userId: form.user.id,
+      });
       await this.formsRepository.remove(form);
 
       return {

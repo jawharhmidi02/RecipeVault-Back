@@ -42,6 +42,22 @@ export class UserController {
     return this.userService.findAll(access_token);
   }
 
+  @Get('/specialists')
+  findAllSpecialists(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 8,
+    @Headers('access_token') access_token: string,
+  ): Promise<
+    ApiResponse<{
+      data: UsersResponse[];
+      totalPages: number;
+      currentPage: number;
+      totalItems: number;
+    }>
+  > {
+    return this.userService.findAllSpecialists(page, limit, access_token);
+  }
+
   @Get('/byid/:id')
   findById(
     @Param('id') id: string,

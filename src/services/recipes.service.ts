@@ -14,6 +14,7 @@ import { UsersResponse } from 'src/dto/users.dto';
 import { RecipeLikes } from 'src/entities/recipe-likes.entity';
 import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 import { Stream } from 'stream';
+import { NotificationsGateway } from 'src/notifications/notifications.gateway';
 
 @Injectable()
 export class RecipesService {
@@ -25,6 +26,7 @@ export class RecipesService {
     private usersRepository: Repository<Users>,
     @InjectRepository(RecipeLikes)
     private recipeLikesRepository: Repository<RecipeLikes>,
+    private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
   async create(
@@ -742,9 +744,28 @@ export class RecipesService {
         delete recipe.is_rejected;
       }
       if (account.role === 'specialist') {
+        let acceptions = account.acceptions;
+        let rejections = account.rejections;
         if (recipe.is_approved === true && testResponse.is_approved === false) {
           recipe.approvedAt = new Date();
+          acceptions += 1;
+          this.notificationsGateway.notifyUserForAcceptedRecipe(
+            testResponse.user.id,
+            {
+              type: 'accepted_recipe',
+              message: `Your recipe: ${testResponse.title}, have been Accepted!`,
+              recipeId: testResponse.id,
+            },
+          );
+        } else {
+          rejections += 1;
         }
+
+        await this.usersRepository.update(account.id, {
+          acceptions,
+          rejections,
+        });
+
         await this.recipeRepository.update(id, {
           is_approved: recipe.is_approved,
           is_rejected: recipe.is_rejected,

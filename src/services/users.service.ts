@@ -117,6 +117,63 @@ export class UsersService {
     }
   }
 
+  async findAllSpecialists(
+    page: number = 1,
+    limit: number = 10,
+    access_token: string,
+  ): Promise<
+    ApiResponse<{
+      data: UsersResponse[];
+      totalPages: number;
+      currentPage: number;
+      totalItems: number;
+    }>
+  > {
+    try {
+      const payLoad = await this.jwtService.verifyAsync(access_token);
+      const account = await this.usersRepository.findOne({
+        where: { id: payLoad.id },
+      });
+
+      if (
+        !account ||
+        account.nonce !== payLoad.nonce ||
+        account.role !== 'admin'
+      ) {
+        return {
+          statusCode: HttpStatus.FORBIDDEN,
+          message: 'Unauthorized access',
+          data: null,
+        };
+      }
+
+      const [response, totalItems] = await this.usersRepository.findAndCount({
+        where: { role: 'specialist' },
+      });
+      const data = response.map((user) => new UsersResponse(user));
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Users retrieved successfully',
+        data: {
+          data: data,
+          totalPages: Math.ceil(totalItems / limit),
+          currentPage: page,
+          totalItems,
+        },
+      };
+    } catch (error) {
+      console.error(error.response);
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: error.message || 'Failed to retrieve users',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   async findAll(access_token: string): Promise<ApiResponse<UsersResponse[]>> {
     try {
       const payLoad = await this.jwtService.verifyAsync(access_token);
@@ -238,6 +295,7 @@ export class UsersService {
       );
     }
   }
+
   async getAccount(access_token: string): Promise<ApiResponse<UsersResponse>> {
     try {
       const payLoad = await this.jwtService.verifyAsync(access_token);

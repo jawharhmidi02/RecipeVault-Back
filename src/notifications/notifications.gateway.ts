@@ -39,17 +39,31 @@ export class NotificationsGateway
     }
   }
 
-  notifyUser(userId: string, notification: any) {
+  notifyUserForAcceptedSpecialist(userId: string, notification: any) {
     const socketId = this.connectedUsers.get(userId);
-    console.log('notification');
-    console.log(notification);
-    console.log('userId');
-    console.log(userId);
+
+    if (socketId) {
+      this.server
+        .to(socketId)
+        .emit('receiveNotificationForAcceptedSpecialist', notification);
+    }
+  }
+
+  notifyUserForAcceptedRecipe(userId: string, notification: any) {
+    const socketId = this.connectedUsers.get(userId);
+
+    if (socketId) {
+      this.server
+        .to(socketId)
+        .emit('receiveNotificationForAcceptedRecipe', notification);
+    }
+  }
+
+  notifyUserForLike(userId: string, notification: any) {
+    const socketId = this.connectedUsers.get(userId);
 
     if (socketId) {
       this.server.to(socketId).emit('receiveNotification', notification);
-    } else {
-      console.log(`User ${userId} is not connected`);
     }
   }
 }

@@ -57,6 +57,8 @@ export class UsersResponse {
   nonce: string;
   recipes: Recipes[];
   likes: RecipeLikes[];
+  acceptions: number;
+  rejections: number;
 
   constructor(user: Users) {
     this.dialogues = user.dialogues;
@@ -68,6 +70,8 @@ export class UsersResponse {
     this.nonce = user.nonce;
     this.recipes = user.recipes;
     this.likes = user.likes;
+    this.acceptions = user.acceptions;
+    this.rejections = user.rejections;
   }
 }
 
@@ -79,6 +83,8 @@ export class UserProfileResponse {
   role: string;
   recipes: Recipes[];
   likes: RecipeLikes[];
+  acceptions: number;
+  rejections: number;
 
   constructor(user: Users) {
     this.email = user.email;
@@ -88,5 +94,8 @@ export class UserProfileResponse {
     this.role = user.role;
     this.recipes = user.recipes;
     this.likes = user.likes;
+
+    this.acceptions = user.acceptions;
+    this.rejections = user.rejections;
   }
 }
