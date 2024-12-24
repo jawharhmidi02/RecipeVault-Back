@@ -14,6 +14,7 @@ const {
   SUPABASE_USERNAME,
   SUPABASE_PASSWORD,
   SUPABASE_DATABASE,
+  SUPABASE_DATABASE_URL,
 } = process.env;
 
 @Module({
@@ -25,9 +26,9 @@ const {
       username: SUPABASE_USERNAME,
       password: SUPABASE_PASSWORD,
       database: SUPABASE_DATABASE,
+      url: SUPABASE_DATABASE_URL,
       entities: [Users, RecipeLikes, Recipes, Forms],
       synchronize: true,
-      subscribers: [],
     }),
   ],
 })

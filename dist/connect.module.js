@@ -15,7 +15,7 @@ const recipe_likes_entity_1 = require("./entities/recipe-likes.entity");
 const recipes_entity_1 = require("./entities/recipes.entity");
 const forms_entity_1 = require("./entities/forms.entity");
 dotenv.config();
-const { SUPABASE_HOST, SUPABASE_PORT, SUPABASE_USERNAME, SUPABASE_PASSWORD, SUPABASE_DATABASE, } = process.env;
+const { SUPABASE_HOST, SUPABASE_PORT, SUPABASE_USERNAME, SUPABASE_PASSWORD, SUPABASE_DATABASE, SUPABASE_DATABASE_URL, } = process.env;
 let ConnectModule = class ConnectModule {
 };
 exports.ConnectModule = ConnectModule;
@@ -29,9 +29,9 @@ exports.ConnectModule = ConnectModule = __decorate([
                 username: SUPABASE_USERNAME,
                 password: SUPABASE_PASSWORD,
                 database: SUPABASE_DATABASE,
+                url: SUPABASE_DATABASE_URL,
                 entities: [users_entity_1.Users, recipe_likes_entity_1.RecipeLikes, recipes_entity_1.Recipes, forms_entity_1.Forms],
                 synchronize: true,
-                subscribers: [],
             }),
         ],
     })

@@ -6,7 +6,7 @@ const http_exception_filter_1 = require("./common/filters/http-exception.filter"
 const common_1 = require("@nestjs/common");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
-    console.log('Server is running on port 5001');
+    console.log('Server is running on port 5000');
     app.useGlobalPipes(new common_1.ValidationPipe({
         whitelist: true,
         forbidNonWhitelisted: true,
@@ -14,7 +14,7 @@ async function bootstrap() {
     }));
     app.enableCors();
     app.useGlobalFilters(new http_exception_filter_1.HttpExceptionFilter());
-    await app.listen(5001);
+    await app.listen(5000);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map
